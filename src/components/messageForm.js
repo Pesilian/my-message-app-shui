@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import '../styles/messageForm.css';
+import '../styles/styles.css';
 
 const MessageForm = () => {
   const [userName, setUserName] = useState('');
   const [text, setText] = useState('');
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [responseMessage, setResponseMessage] = useState('');
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -31,36 +33,57 @@ const MessageForm = () => {
 
       const data = await response.json();
       console.log(data.message);
-
+      setResponseMessage(data.message);
       setUserName('');
       setText('');
+      setShowOverlay(false);
     } catch (error) {
       console.error('Error posting message:', error);
+      setResponseMessage(`Error: ${error.message}`);
     }
   };
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <input
-        className="textinput"
-        type="text"
-        value={userName}
-        onChange={e => setUserName(e.target.value)}
-        placeholder="Your name"
-        required
-      />
-      <input
-        className="textinput"
-        type="text"
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="Your message"
-        required
-      />
-      <button className="submitbtn" type="submit">
-        Post Message
+    <div>
+      <button className="overlayBtn" onClick={() => setShowOverlay(true)}>
+        New Message
       </button>
-    </form>
+
+      {showOverlay && (
+        <div className="overlay">
+          <form className="form" onSubmit={handleSubmit}>
+            <input
+              className="textinput"
+              type="text"
+              value={userName}
+              onChange={e => setUserName(e.target.value)}
+              placeholder="Your name"
+              required
+            />
+            <textarea
+              className="messageinput"
+              type="text"
+              value={text}
+              onChange={e => setText(e.target.value)}
+              placeholder="Your message"
+              required
+            />
+            <button className="submitBtn" type="submit">
+              Submit
+            </button>
+            <button
+              className="closeBtn"
+              type="button"
+              onClick={() => setShowOverlay(false)}
+            >
+              Close
+            </button>
+          </form>
+        </div>
+      )}
+
+      {responseMessage && <p>{responseMessage}</p>}
+    </div>
   );
 };
 

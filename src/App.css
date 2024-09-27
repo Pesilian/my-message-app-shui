@@ -1,6 +1,23 @@
 .App {
+  max-width: 1500px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.headercont {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.btncont {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+  gap: 20px;
+  margin-right: 20px;
 }

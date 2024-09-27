@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../styles/styles.css';
 
 const UpdateMessageOverlay = () => {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -17,7 +18,6 @@ const UpdateMessageOverlay = () => {
         }
       );
       setResponseMessage(response.data.message);
-      // Rensa formuläret och stäng overlayen efter en lyckad uppdatering
       setId('');
       setText('');
       setShowOverlay(false);
@@ -30,26 +30,34 @@ const UpdateMessageOverlay = () => {
 
   return (
     <div>
-      <button onClick={() => setShowOverlay(true)}>Update Message</button>
+      <button className="overlayBtn" onClick={() => setShowOverlay(true)}>
+        Edit message
+      </button>
 
       {showOverlay && (
         <div className="overlay">
-          <div className="overlay-content">
+          <form className="form">
             <input
+              className="textinput"
               type="text"
               placeholder="Enter ID"
               value={id}
               onChange={e => setId(e.target.value)}
             />
-            <input
+            <textarea
+              className="messageinput"
               type="text"
               placeholder="Enter New Text"
               value={text}
               onChange={e => setText(e.target.value)}
             />
-            <button onClick={handleSubmit}>Submit</button>
-            <button onClick={() => setShowOverlay(false)}>Close</button>
-          </div>
+            <button className="submitBtn" onClick={handleSubmit}>
+              Submit
+            </button>
+            <button className="closeBtn" onClick={() => setShowOverlay(false)}>
+              Close
+            </button>
+          </form>
         </div>
       )}
 

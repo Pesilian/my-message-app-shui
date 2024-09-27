@@ -7,10 +7,14 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <Header />
-      <MessageForm />
+      <div className="headercont">
+        <Header />
+        <div className="btncont">
+          <MessageForm />
+          <UpdateMessageOverlay />
+        </div>
+      </div>
       <ShowMessages />
-      <UpdateMessageOverlay />
     </div>
   );
 }

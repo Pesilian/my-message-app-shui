@@ -1,7 +1,6 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
-// Initiera DynamoDBClient och DynamoDBDocumentClient
 const dbClient = new DynamoDBClient({});
 const db = DynamoDBDocumentClient.from(dbClient);
 
@@ -20,14 +19,23 @@ export const handler = async (event, context) => {
       };
       return response;
     } else {
-      // Sortera meddelanden efter createdAt i fallande ordning
       const sortedMessages = result.Items.sort((a, b) => {
-        return new Date(b.createdAt) - new Date(a.createdAt); // Använd 'createdAt' för sortering
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      const formattedMessages = sortedMessages.map(item => {
+        const date = new Date(item.createdAt);
+        const formattedDate = `${date.getFullYear()}-${String(
+          date.getMonth() + 1
+        ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(
+          date.getHours()
+        ).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        return { ...item, createdAt: formattedDate };
       });
 
       const response = {
         statusCode: 200,
-        body: JSON.stringify({ message: sortedMessages }),
+        body: JSON.stringify({ message: formattedMessages }),
       };
       return response;
     }
