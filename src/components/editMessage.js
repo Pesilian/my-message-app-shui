@@ -51,7 +51,13 @@ const UpdateMessageOverlay = () => {
               value={text}
               onChange={e => setText(e.target.value)}
             />
-            <button className="submitBtn" onClick={handleSubmit}>
+            <button
+              className="submitBtn"
+              onClick={e => {
+                e.preventDefault(); // Förhindra att formuläret skickas om
+                handleSubmit();
+              }}
+            >
               Submit
             </button>
             <button className="closeBtn" onClick={() => setShowOverlay(false)}>
