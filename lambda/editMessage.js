@@ -1,5 +1,9 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import {
+  DynamoDBDocumentClient,
+  UpdateCommand,
+  GetCommand,
+} from '@aws-sdk/lib-dynamodb';
 
 const client = new DynamoDBClient({});
 const dynamoDb = DynamoDBDocumentClient.from(client);
@@ -13,29 +17,44 @@ export const handler = async event => {
     const { id, userName, text } = JSON.parse(event.body);
 
     if (!id || !text) {
-      throw new Error('id, or text is missing from the request body');
+      throw new Error('id or text is missing from the request body');
+    }
+
+    const getParams = {
+      TableName: 'Messages',
+      Key: { id: id },
+    };
+
+    const getResult = await dynamoDb.send(new GetCommand(getParams));
+
+    if (!getResult.Item) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({
+          message: `Message with id ${id} not found`,
+        }),
+      };
     }
 
     const updatedAt = new Date().toISOString();
 
-    const params = {
+    const updateParams = {
       TableName: 'Messages',
       Key: { id: id },
-      UpdateExpression: 'SET  message = :text, updatedAt = :updatedAt',
+      UpdateExpression: 'SET message = :text, updatedAt = :updatedAt',
       ExpressionAttributeValues: {
-        ':userName': userName,
         ':text': text,
         ':updatedAt': updatedAt,
       },
       ReturnValues: 'ALL_NEW',
     };
 
-    const result = await dynamoDb.send(new UpdateCommand(params));
+    const updateResult = await dynamoDb.send(new UpdateCommand(updateParams));
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        updatedItem: result.Attributes,
+        updatedItem: updateResult.Attributes,
       }),
     };
   } catch (error) {

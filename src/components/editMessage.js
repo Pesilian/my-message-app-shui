@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/styles.css';
 
@@ -7,6 +7,7 @@ const UpdateMessageOverlay = () => {
   const [id, setId] = useState('');
   const [text, setText] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
+  const [isError, setIsError] = useState(false);
 
   const handleSubmit = async () => {
     try {
@@ -18,13 +19,21 @@ const UpdateMessageOverlay = () => {
         }
       );
       setResponseMessage(response.data.message);
+      setIsError(false); // Rensa error status
       setId('');
       setText('');
       setShowOverlay(false);
     } catch (error) {
-      setResponseMessage(
-        `Error: ${error.response?.data?.message || error.message}`
-      );
+      const errorMessage = `Error: ${
+        error.response?.data?.message || error.message
+      }`;
+      setResponseMessage(errorMessage);
+      setIsError(true);
+
+      setTimeout(() => {
+        setResponseMessage('');
+        setIsError(false);
+      }, 2000);
     }
   };
 
@@ -43,6 +52,7 @@ const UpdateMessageOverlay = () => {
               placeholder="Enter ID"
               value={id}
               onChange={e => setId(e.target.value)}
+              required
             />
             <textarea
               className="messageinput"
@@ -50,6 +60,7 @@ const UpdateMessageOverlay = () => {
               placeholder="Enter New Text"
               value={text}
               onChange={e => setText(e.target.value)}
+              required
             />
             <button
               className="submitBtn"
@@ -67,7 +78,11 @@ const UpdateMessageOverlay = () => {
         </div>
       )}
 
-      {responseMessage && <p>{responseMessage}</p>}
+      {responseMessage && (
+        <p className={isError ? 'errorMessage' : 'successMessage'}>
+          {responseMessage}
+        </p>
+      )}
     </div>
   );
 };
