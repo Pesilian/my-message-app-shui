@@ -17,6 +17,10 @@ const UpdateMessageOverlay = () => {
         }
       );
       setResponseMessage(response.data.message);
+      // Rensa formuläret och stäng overlayen efter en lyckad uppdatering
+      setId('');
+      setText('');
+      setShowOverlay(false);
     } catch (error) {
       setResponseMessage(
         `Error: ${error.response?.data?.message || error.message}`
