@@ -16,16 +16,25 @@ const ShowMessages = () => {
         }
 
         const data = await response.json();
-        console.log('API response:', data); // Kontrollera API-svaret
+        console.log('API response:', data);
 
-        // Använd 'message' arrayen från API-svaret
+        // Sätt de hämtade meddelandena till state
         setMessages(Array.isArray(data.message) ? data.message : []);
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
     };
 
+    // Hämta meddelanden vid komponentens första render
     fetchMessages();
+
+    // Polling: Hämta meddelanden var 10:e sekund (10000 ms)
+    const intervalId = setInterval(() => {
+      fetchMessages();
+    }, 2000); // 10 sekunder
+
+    // Rensa intervallet när komponenten avmonteras
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
