@@ -20,9 +20,14 @@ export const handler = async (event, context) => {
       };
       return response;
     } else {
+      // Sortera meddelanden efter createdAt i fallande ordning
+      const sortedMessages = result.Items.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt); // Använd 'createdAt' för sortering
+      });
+
       const response = {
         statusCode: 200,
-        body: JSON.stringify({ message: result.Items }),
+        body: JSON.stringify({ message: sortedMessages }),
       };
       return response;
     }
