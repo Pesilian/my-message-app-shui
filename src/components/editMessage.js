@@ -19,7 +19,7 @@ const UpdateMessageOverlay = () => {
         }
       );
       setResponseMessage(response.data.message);
-      setIsError(false); // Rensa error status
+      setIsError(false);
       setId('');
       setText('');
       setShowOverlay(false);
@@ -65,7 +65,7 @@ const UpdateMessageOverlay = () => {
             <button
               className="submitBtn"
               onClick={e => {
-                e.preventDefault(); // Förhindra att formuläret skickas om
+                e.preventDefault();
                 handleSubmit();
               }}
             >
