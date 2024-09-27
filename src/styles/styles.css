@@ -96,6 +96,11 @@
   margin-bottom: 10px;
 }
 
+.sortingcont {
+  align-self: flex-start;
+  margin-left: 45px;
+}
+
 .sortinglabel {
   margin-bottom: 10px;
   font-family: 'sono', sans-serif;
