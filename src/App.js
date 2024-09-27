@@ -14,6 +14,7 @@ function App() {
           <UpdateMessageOverlay />
         </div>
       </div>
+
       <ShowMessages />
     </div>
   );
