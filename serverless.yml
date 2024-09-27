@@ -1,0 +1,65 @@
+service: my-serverless-service
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: default
+  region: eu-north-1
+  environment:
+    DYNAMODB_TABLE: Messages
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 'dynamodb:PostItem'
+        - 'dynamodb:GetItem'
+        - 'dynamodb:PutItem'
+      Resource: 'arn:aws:dynamodb:eu-west-1:977099030879:table/Messages' 
+
+functions:
+  postMessage:
+    handler: lambda/postMessage.handler
+    events:
+      - http:
+          path: post-message
+          method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+
+  getMessages:
+    handler: lambda/getMessages.handler
+    events:
+      - http:
+          path: get-messages
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+    editMessages:
+    handler: lambda/editMessage.handler
+    events:
+      - http:
+          path: put-messages
+          method: put
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+

@@ -1,0 +1,700 @@
+{
+  "C:\\Users\\linas\\OneDrive\\Skrivbord\\Ny mapp\\my-message-app-shui": {
+    "versionSfCore": null,
+    "versionFramework": "4.4.3",
+    "isWithinCompose": false,
+    "isCompose": false,
+    "composeOrgName": null,
+    "composeResolverProviders": {
+      "default-aws-credential-resolver": "<REDACTED>"
+    },
+    "composeServiceName": null,
+    "servicePath": "C:\\Users\\linas\\OneDrive\\Skrivbord\\Ny mapp\\my-message-app-shui",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "my-serverless-service",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs20.x",
+        "stage": "default",
+        "region": "eu-north-1",
+        "environment": {
+          "DYNAMODB_TABLE": "Messages"
+        },
+        "iamRoleStatements": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "dynamodb:PutItem",
+              "dynamodb:GetItem",
+              "dynamodb:UpdateItem"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-west-1:977099030879:table/Messages"
+          }
+        ],
+        "versionFunctions": true,
+        "compiledCloudFormationTemplate": {
+          "AWSTemplateFormatVersion": "2010-09-09",
+          "Description": "The AWS CloudFormation template for this Serverless application",
+          "Resources": {
+            "PostMessageLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/my-serverless-service-default-postMessage"
+              }
+            },
+            "GetMessagesLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/my-serverless-service-default-getMessages"
+              }
+            },
+            "IamRoleLambdaExecution": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": [
+                          "lambda.amazonaws.com"
+                        ]
+                      },
+                      "Action": [
+                        "sts:AssumeRole"
+                      ]
+                    }
+                  ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          "my-serverless-service",
+                          "default",
+                          "lambda"
+                        ]
+                      ]
+                    },
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                            "logs:TagResource"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/my-serverless-service-default*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:PutLogEvents"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/my-serverless-service-default*:*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "dynamodb:PutItem",
+                            "dynamodb:GetItem",
+                            "dynamodb:UpdateItem"
+                          ],
+                          "Resource": "arn:aws:dynamodb:eu-west-1:977099030879:table/Messages"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "Path": "/",
+                "RoleName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "my-serverless-service",
+                      "default",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "lambdaRole"
+                    ]
+                  ]
+                }
+              }
+            },
+            "PostMessageLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-eu-north-1-bc83bb47-2c47",
+                  "S3Key": "serverless/my-serverless-service/default/1727377806226-2024-09-26T19:10:06.226Z/my-serverless-service.zip"
+                },
+                "Handler": "lambda/postMessage.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "my-serverless-service-default-postMessage",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "DYNAMODB_TABLE": "Messages"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "PostMessageLogGroup"
+              ]
+            },
+            "GetMessagesLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-eu-north-1-bc83bb47-2c47",
+                  "S3Key": "serverless/my-serverless-service/default/1727377806226-2024-09-26T19:10:06.226Z/my-serverless-service.zip"
+                },
+                "Handler": "lambda/getMessages.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "my-serverless-service-default-getMessages",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "DYNAMODB_TABLE": "Messages"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "GetMessagesLogGroup"
+              ]
+            },
+            "PostMessageLambdaVersionWMMi3S6dbTbQCziWcZkrd96RKhZBH5sDXxrOjZfaA": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "PostMessageLambdaFunction"
+                },
+                "CodeSha256": "JbusX7Brk5Kzw0RdjPH9ibWapdPMneuaVUrji+Tv0Ns="
+              }
+            },
+            "GetMessagesLambdaVersionAIHanInO3y0k8vymunrysR37ifs79I1cYPbsfI5VGk": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "GetMessagesLambdaFunction"
+                },
+                "CodeSha256": "JbusX7Brk5Kzw0RdjPH9ibWapdPMneuaVUrji+Tv0Ns="
+              }
+            },
+            "ApiGatewayRestApi": {
+              "Type": "AWS::ApiGateway::RestApi",
+              "Properties": {
+                "Name": "default-my-serverless-service",
+                "EndpointConfiguration": {
+                  "Types": [
+                    "EDGE"
+                  ]
+                },
+                "Policy": ""
+              }
+            },
+            "ApiGatewayResourcePostDashmessage": {
+              "Type": "AWS::ApiGateway::Resource",
+              "Properties": {
+                "ParentId": {
+                  "Fn::GetAtt": [
+                    "ApiGatewayRestApi",
+                    "RootResourceId"
+                  ]
+                },
+                "PathPart": "post-message",
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                }
+              }
+            },
+            "ApiGatewayResourceGetDashmessages": {
+              "Type": "AWS::ApiGateway::Resource",
+              "Properties": {
+                "ParentId": {
+                  "Fn::GetAtt": [
+                    "ApiGatewayRestApi",
+                    "RootResourceId"
+                  ]
+                },
+                "PathPart": "get-messages",
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                }
+              }
+            },
+            "ApiGatewayMethodPostDashmessageOptions": {
+              "Type": "AWS::ApiGateway::Method",
+              "Properties": {
+                "AuthorizationType": "NONE",
+                "HttpMethod": "OPTIONS",
+                "MethodResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": true,
+                      "method.response.header.Access-Control-Allow-Headers": true,
+                      "method.response.header.Access-Control-Allow-Methods": true
+                    },
+                    "ResponseModels": {}
+                  }
+                ],
+                "RequestParameters": {},
+                "Integration": {
+                  "Type": "MOCK",
+                  "RequestTemplates": {
+                    "application/json": "{statusCode:200}"
+                  },
+                  "ContentHandling": "CONVERT_TO_TEXT",
+                  "IntegrationResponses": [
+                    {
+                      "StatusCode": "200",
+                      "ResponseParameters": {
+                        "method.response.header.Access-Control-Allow-Origin": "'*'",
+                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+                      },
+                      "ResponseTemplates": {
+                        "application/json": ""
+                      }
+                    }
+                  ]
+                },
+                "ResourceId": {
+                  "Ref": "ApiGatewayResourcePostDashmessage"
+                },
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                }
+              }
+            },
+            "ApiGatewayMethodGetDashmessagesOptions": {
+              "Type": "AWS::ApiGateway::Method",
+              "Properties": {
+                "AuthorizationType": "NONE",
+                "HttpMethod": "OPTIONS",
+                "MethodResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": true,
+                      "method.response.header.Access-Control-Allow-Headers": true,
+                      "method.response.header.Access-Control-Allow-Methods": true
+                    },
+                    "ResponseModels": {}
+                  }
+                ],
+                "RequestParameters": {},
+                "Integration": {
+                  "Type": "MOCK",
+                  "RequestTemplates": {
+                    "application/json": "{statusCode:200}"
+                  },
+                  "ContentHandling": "CONVERT_TO_TEXT",
+                  "IntegrationResponses": [
+                    {
+                      "StatusCode": "200",
+                      "ResponseParameters": {
+                        "method.response.header.Access-Control-Allow-Origin": "'*'",
+                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                      },
+                      "ResponseTemplates": {
+                        "application/json": ""
+                      }
+                    }
+                  ]
+                },
+                "ResourceId": {
+                  "Ref": "ApiGatewayResourceGetDashmessages"
+                },
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                }
+              }
+            },
+            "ApiGatewayMethodPostDashmessagePost": {
+              "Type": "AWS::ApiGateway::Method",
+              "Properties": {
+                "HttpMethod": "POST",
+                "RequestParameters": {},
+                "ResourceId": {
+                  "Ref": "ApiGatewayResourcePostDashmessage"
+                },
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                },
+                "ApiKeyRequired": "<REDACTED>",
+                "AuthorizationType": "NONE",
+                "Integration": {
+                  "IntegrationHttpMethod": "POST",
+                  "Type": "AWS_PROXY",
+                  "Uri": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":apigateway:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":lambda:path/2015-03-31/functions/",
+                        {
+                          "Fn::GetAtt": [
+                            "PostMessageLambdaFunction",
+                            "Arn"
+                          ]
+                        },
+                        "/invocations"
+                      ]
+                    ]
+                  }
+                },
+                "MethodResponses": []
+              },
+              "DependsOn": [
+                "PostMessageLambdaPermissionApiGateway"
+              ]
+            },
+            "ApiGatewayMethodGetDashmessagesGet": {
+              "Type": "AWS::ApiGateway::Method",
+              "Properties": {
+                "HttpMethod": "GET",
+                "RequestParameters": {},
+                "ResourceId": {
+                  "Ref": "ApiGatewayResourceGetDashmessages"
+                },
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                },
+                "ApiKeyRequired": "<REDACTED>",
+                "AuthorizationType": "NONE",
+                "Integration": {
+                  "IntegrationHttpMethod": "POST",
+                  "Type": "AWS_PROXY",
+                  "Uri": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":apigateway:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":lambda:path/2015-03-31/functions/",
+                        {
+                          "Fn::GetAtt": [
+                            "GetMessagesLambdaFunction",
+                            "Arn"
+                          ]
+                        },
+                        "/invocations"
+                      ]
+                    ]
+                  }
+                },
+                "MethodResponses": []
+              },
+              "DependsOn": [
+                "GetMessagesLambdaPermissionApiGateway"
+              ]
+            },
+            "ApiGatewayDeployment1727377789943": {
+              "Type": "AWS::ApiGateway::Deployment",
+              "Properties": {
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                },
+                "StageName": "default"
+              },
+              "DependsOn": [
+                "ApiGatewayMethodPostDashmessageOptions",
+                "ApiGatewayMethodGetDashmessagesOptions",
+                "ApiGatewayMethodPostDashmessagePost",
+                "ApiGatewayMethodGetDashmessagesGet"
+              ]
+            },
+            "PostMessageLambdaPermissionApiGateway": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "PostMessageLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "ApiGatewayRestApi"
+                      },
+                      "/*/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "GetMessagesLambdaPermissionApiGateway": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "GetMessagesLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "ApiGatewayRestApi"
+                      },
+                      "/*/*"
+                    ]
+                  ]
+                }
+              }
+            }
+          },
+          "Outputs": {
+            "ServerlessDeploymentBucketName": {
+              "Value": "serverless-framework-deployments-eu-north-1-bc83bb47-2c47",
+              "Export": {
+                "Name": "sls-my-serverless-service-default-ServerlessDeploymentBucketName"
+              }
+            },
+            "PostMessageLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "PostMessageLambdaVersionWMMi3S6dbTbQCziWcZkrd96RKhZBH5sDXxrOjZfaA"
+              },
+              "Export": {
+                "Name": "sls-my-serverless-service-default-PostMessageLambdaFunctionQualifiedArn"
+              }
+            },
+            "GetMessagesLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "GetMessagesLambdaVersionAIHanInO3y0k8vymunrysR37ifs79I1cYPbsfI5VGk"
+              },
+              "Export": {
+                "Name": "sls-my-serverless-service-default-GetMessagesLambdaFunctionQualifiedArn"
+              }
+            },
+            "ServiceEndpoint": {
+              "Description": "URL of the service endpoint",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    ".execute-api.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/default"
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "sls-my-serverless-service-default-ServiceEndpoint"
+              }
+            }
+          }
+        },
+        "vpc": {}
+      },
+      "functions": {
+        "postMessage": {
+          "handler": "lambda/postMessage.handler",
+          "events": [
+            {
+              "http": {
+                "path": "post-message",
+                "method": "post",
+                "cors": {
+                  "origin": "*",
+                  "methods": [
+                    "OPTIONS",
+                    "POST"
+                  ],
+                  "headers": [
+                    "Content-Type",
+                    "X-Amz-Date",
+                    "Authorization",
+                    "X-Api-Key",
+                    "X-Amz-Security-Token",
+                    "X-Amz-User-Agent"
+                  ],
+                  "allowCredentials": "<REDACTED>"
+                },
+                "integration": "AWS_PROXY"
+              }
+            }
+          ],
+          "name": "my-serverless-service-default-postMessage",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "nodejs20.x",
+          "vpc": {},
+          "versionLogicalId": "PostMessageLambdaVersionWMMi3S6dbTbQCziWcZkrd96RKhZBH5sDXxrOjZfaA"
+        },
+        "getMessages": {
+          "handler": "lambda/getMessages.handler",
+          "events": [
+            {
+              "http": {
+                "path": "get-messages",
+                "method": "get",
+                "cors": {
+                  "origin": "*",
+                  "methods": [
+                    "OPTIONS",
+                    "GET"
+                  ],
+                  "headers": [
+                    "Content-Type",
+                    "X-Amz-Date",
+                    "Authorization",
+                    "X-Api-Key",
+                    "X-Amz-Security-Token",
+                    "X-Amz-User-Agent"
+                  ],
+                  "allowCredentials": "<REDACTED>"
+                },
+                "integration": "AWS_PROXY"
+              }
+            }
+          ],
+          "name": "my-serverless-service-default-getMessages",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "nodejs20.x",
+          "vpc": {},
+          "versionLogicalId": "GetMessagesLambdaVersionAIHanInO3y0k8vymunrysR37ifs79I1cYPbsfI5VGk"
+        }
+      }
+    },
+    "serviceRawFile": "service: my-serverless-service\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  stage: default\r\n  region: eu-north-1\r\n  environment:\r\n    DYNAMODB_TABLE: Messages\r\n  iamRoleStatements:\r\n    - Effect: 'Allow'\r\n      Action:\r\n        - 'dynamodb:PutItem'\r\n        - 'dynamodb:GetItem'\r\n        - 'dynamodb:UpdateItem'\r\n      Resource: 'arn:aws:dynamodb:eu-west-1:977099030879:table/Messages' # Ändrad region här\r\n\r\nfunctions:\r\n  postMessage:\r\n    handler: lambda/postMessage.handler\r\n    events:\r\n      - http:\r\n          path: post-message\r\n          method: post\r\n          cors:\r\n            origin: '*'\r\n            headers:\r\n              - Content-Type\r\n              - X-Amz-Date\r\n              - Authorization\r\n              - X-Api-Key\r\n              - X-Amz-Security-Token\r\n              - X-Amz-User-Agent\r\n\r\n  getMessages:\r\n    handler: lambda/getMessages.handler\r\n    events:\r\n      - http:\r\n          path: get-messages\r\n          method: get\r\n          cors:\r\n            origin: '*'\r\n            headers:\r\n              - Content-Type\r\n              - X-Amz-Date\r\n              - Authorization\r\n              - X-Api-Key\r\n              - X-Amz-Security-Token\r\n              - X-Amz-User-Agent\r\n",
+    "command": [
+      "deploy"
+    ],
+    "options": {},
+    "error": {
+      "message": "An error occurred: PostMessageLambdaFunction - Resource handler returned message: \"Unzipped size must be smaller than 262144000 bytes (Service: Lambda, Status Code: 400, Request ID: 326c9a34-b95c-4d13-a406-d64c16cd5bbf)\" (RequestToken: f5f12552-cdac-33e4-f315-df918b05900c, HandlerErrorCode: InvalidRequest).",
+      "stack": "ServerlessError2: An error occurred: PostMessageLambdaFunction - Resource handler returned message: \"Unzipped size must be smaller than 262144000 bytes (Service: Lambda, Status Code: 400, Request ID: 326c9a34-b95c-4d13-a406-d64c16cd5bbf)\" (RequestToken: f5f12552-cdac-33e4-f315-df918b05900c, HandlerErrorCode: InvalidRequest).\n    at file:///C:/Users/linas/.serverless/releases/4.4.3/package/dist/sf-core.js:716:832\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async AwsDeploy.createFallback (file:///C:/Users/linas/.serverless/releases/4.4.3/package/dist/sf-core.js:716:23565)\n    at async aws:deploy:deploy:updateStack (file:///C:/Users/linas/.serverless/releases/4.4.3/package/dist/sf-core.js:727:5729)\n    at async PluginManager.runHooks (file:///C:/Users/linas/.serverless/releases/4.4.3/package/dist/sf-core.js:914:9311)\n    at async PluginManager.invoke (file:///C:/Users/linas/.serverless/releases/4.4.3/package/dist/sf-core.js:914:10082)\n    at async PluginManager.spawn (file:///C:/Users/linas/.serverless/releases/4.4.3/package/dist/sf-core.js:914:10443)\n    at async PluginManager.runHooks (file:///C:/Users/linas/.serverless/releases/4.4.3/package/dist/sf-core.js:914:9311)\n    at async PluginManager.invoke (file:///C:/Users/linas/.serverless/releases/4.4.3/package/dist/sf-core.js:914:10082)\n    at async PluginManager.run (file:///C:/Users/linas/.serverless/releases/4.4.3/package/dist/sf-core.js:914:10813)",
+      "code": "AWS_CLOUD_FORMATION_CREATE_STACK_INTERNAL_LAMBDA_FUNCTION_CREATE_FAILED"
+    },
+    "params": {},
+    "machineId": "4ae3e40f6d4be26e4c968e53675a4668",
+    "stage": "default",
+    "accessKeyV2": "<REDACTED>",
+    "accessKeyV1": "<REDACTED>",
+    "orgId": "3fdaada6-8636-4a45-bd2f-2b18418feb2d",
+    "orgName": "pesilian",
+    "userId": "x29YlVSHh1z7hyQlZ3",
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "userName": "pesilian",
+    "subscription": null,
+    "userEmail": "linasignell@live.se",
+    "serviceProviderAwsRegion": "eu-north-1",
+    "serviceProviderAwsCredentials": "<REDACTED>",
+    "serviceProviderAwsAccountId": "977099030879",
+    "projectType": "traditional",
+    "versionSf": "4.4.3",
+    "serviceProviderAwsCfStackName": "my-serverless-service-default",
+    "serviceUniqueId": "arn:aws:cloudformation:eu-north-1:977099030879:stack/my-serverless-service-default/f9f539c0-7c3a-11ef-acc1-0e659b2a2e0f",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:eu-north-1:977099030879:stack/my-serverless-service-default/f9f539c0-7c3a-11ef-acc1-0e659b2a2e0f",
+    "serviceProviderAwsCfStackCreated": "2024-09-26T19:10:21.988Z",
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": "DELETE_IN_PROGRESS",
+    "serviceProviderAwsCfStackOutputs": null
+  }
+}

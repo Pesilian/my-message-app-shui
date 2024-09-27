@@ -1,0 +1,27 @@
+.container {
+  width: 500px;
+  display: flex;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.listcont {
+  list-style: none;
+  margin: auto;
+  align-items: center;
+}
+
+.messagecontainer {
+  align-self: center;
+  border: solid 1px black;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.username {
+  font-weight: 700;
+}
+
+.date {
+  font-size: 12px;
+}
